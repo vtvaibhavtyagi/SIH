@@ -13,6 +13,5 @@ class Hash():
 
     def verify(hashed_password, plain_password):
         return pwd_cxt.verify(plain_password, hashed_password)
-    
+
     # def verifyUser(username:str,password:str, db: Session = Depends(database.get_db)):
-        

@@ -1,9 +1,7 @@
 
-from multiprocessing.spawn import import_main_path
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from bhraman import JWToken
-from .. import schemas, database, models, JWToken
+from .. import models, schemas, JWToken,database
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from ..hashing import Hash
@@ -23,8 +21,6 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     if not Hash.verify(user.password, request.password):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Incorrect password")
-    
+
     access_token = JWToken.create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
-
-    return user

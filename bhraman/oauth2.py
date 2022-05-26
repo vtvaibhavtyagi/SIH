@@ -13,3 +13,4 @@ def get_current_user(data: str = Depends(oauth2_scheme)):
     )
 
     return JWToken.verify_token(data, credentials_exception)
+
