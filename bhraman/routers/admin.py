@@ -17,28 +17,35 @@ get_db = database.get_db
 
 
 @router.post("/")
-def create_admin(request: schemas.Admin, db: Session = Depends(get_db)):
-    new_admin = models.Admin(name=request.name, desig=request.desig)
+def create_admin(request1: schemas.Admin, request2: schemas.User, db: Session = Depends(get_db)):
+    new_admin = models.Admin(name=request1.name, desig=request1.desig)
+
     db.add(new_admin)
     db.commit()
     db.refresh(new_admin)
-    return new_admin
 
-
-@router.post("/{id}")
-def create_admin_user(id, request: schemas.User, db: Session = Depends(get_db)):
-
-    user = db.query(models.Admin).filter(models.Admin.id == id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            details=f"Admin with the id {id} is not available")
-
-    new_user = models.User(role=request.role,
-                           email=request.email, password=hashing.Hash.bcrypt(request.password), ref_id=id)
+    new_user = models.User(role=request2.role,
+                           email=request2.email, password=hashing.Hash.bcrypt(request2.password), ref_id=new_admin.id)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user
+    return new_admin
+
+
+# @router.post("/{id}")
+# def create_admin_user(id, request: schemas.User, db: Session = Depends(get_db)):
+
+#     user = db.query(models.Admin).filter(models.Admin.id == id).first()
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+#                             details=f"Admin with the id {id} is not available")
+
+#     new_user = models.User(role=request2.role,
+#                            email=request2.email, password=hashing.Hash.bcrypt(request2.password), ref_id=id)
+#     db.add(new_user)
+#     db.commit()
+#     db.refresh(new_user)
+#     return new_user
 
 
 @router.get("/", response_model=List[schemas.ShowAdmin])
