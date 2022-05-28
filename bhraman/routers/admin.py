@@ -18,6 +18,13 @@ get_db = database.get_db
 
 @router.post("/")
 def create_admin(request1: schemas.Admin, request2: schemas.User, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(
+        models.User.email == request2.email).all()
+
+    if user:
+        raise HTTPException(status_code=status.HTTP_208_ALREADY_REPORTED,
+                            details=f"User already Register")
+
     new_admin = models.Admin(name=request1.name, desig=request1.desig)
 
     db.add(new_admin)
@@ -55,7 +62,7 @@ def all(db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=schemas.ShowAdmin)
-def show_admin(id, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+def show_admin(id, db: Session = Depends(get_db), current_email: schemas.TokenData = Depends(get_current_user)):
     user = db.query(models.Admin).filter(models.Admin.id == id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

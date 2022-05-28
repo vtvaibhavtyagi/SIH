@@ -7,7 +7,6 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from . import schemas
-from sqlalchemy.orm import Session
 from . import database, schemas, models
 
 
@@ -36,13 +35,10 @@ def verify_token(token: str, credentials_exception):
     except JWTError:
         raise credentials_exception
 
-    user = find_user(token_data.email)
-    if user is None:
+    
+    if token_data is None:
         raise credentials_exception
-    return user
+    return token_data
 
 
-def find_user(email, db: Session = next(get_db())):
 
-    user = db.query(models.User).filter(models.User.email == email).first()
-    return user

@@ -1,9 +1,9 @@
 
-from datetime import datetime
 from enum import unique
+from time import time
 from turtle import back
 from typing import Optional
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date,DateTime
 from sqlalchemy.orm import relationship
 
 from bhraman.routers import monument
@@ -53,14 +53,18 @@ class MonumentEmp(Base):
     fname = Column(String)
     lname = Column(String)
     designation = Column(String)
-    dob = Column(String)
+    dob = Column(Date)
     mobile = Column(Integer)
     timeStamp = Column(String)
     monument_id = Column(Integer, ForeignKey('monument.id'))
     boss = relationship("Monuments", back_populates='employ')
-    
+
     category = relationship("Category", back_populates="madeBy")
     scanner = relationship("Scanner", back_populates='madeBy')
+    rate = relationship("RateCard", back_populates='madeBy')
+    web = relationship("WebResources", back_populates='modeBy')
+    day = relationship("Day", back_populates='modeBy')
+    time = relationship("Time", back_populates='modeBy')
 
 
 class Category(Base):
@@ -71,6 +75,7 @@ class Category(Base):
     emp_id = Column(Integer, ForeignKey('monumentemp.id'))
     madeBy = relationship("MonumentEmp", back_populates='category')
     scanner = relationship("Scanner", back_populates='category')
+    rate = relationship("RateCard", back_populates='category')
 
 
 class Scanner(Base):
@@ -82,24 +87,46 @@ class Scanner(Base):
     madeBy = relationship("MonumentEmp", back_populates='scanner')
     category = relationship("Category", back_populates='scanner')
 
-# class WebResources(Base):
 
-#     __tablename__ = "webresources"
-#     id = Column(Integer, primary_key=True, index=True)
-#     wr_name = Column(String)
-#     wr_desc = Column(String)
-#     wr_file = Column(String)
-
-
-# class RateCard(Base):
-#     __tablename__ = "ratecard"
-#     rc_id = Column(Integer, primary_key=True, index=True)
-#     rc_nation = Column(Boolean, default=True)
-#     rc_amount = Column(Integer)
+class RateCard(Base):
+    __tablename__ = "ratecard"
+    id = Column(Integer, primary_key=True, index=True)
+    nation = Column(String, default="Indian")
+    amount = Column(Integer)
+    emp_id = Column(Integer, ForeignKey('monumentemp.id'))
+    cat_id = Column(Integer, ForeignKey('category.id'))
+    madeBy = relationship("MonumentEmp", back_populates='rate')
+    category = relationship("Category", back_populates='rate')
 
 
-# class Day(Base):
-#     __tablename__ = "day"
-#     id = Column(Integer, primary_key=True, index=True)
-#     day_name = Column(String)
-#     day_status = Column(Boolean, default=True)
+class WebResources(Base):
+
+    __tablename__ = "webresources"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    file = Column(String)
+    desc = Column(String)
+    emp_id = Column(Integer, ForeignKey('monumentemp.id'))
+    madeBy = relationship("MonumentEmp", back_populates='web')
+
+
+class Day(Base):
+    __tablename__ = "day"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    status = Column(Boolean, default=True)
+    emp_id = Column(Integer, ForeignKey('monumentemp.id'))
+    madeBy = relationship("MonumentEmp", back_populates='day')
+    day = relationship("Time", back_populates='time')
+    
+class Time(Base):
+    __tablename__ = "time"
+    id = Column(Integer, primary_key=True, index=True)
+    start = Column(DateTime)
+    end = Column(DateTime)
+    emp_id = Column(Integer, ForeignKey('monumentemp.id'))
+    day_id = Column(Integer,ForeignKey('day.id'))
+    madeBy = relationship("MonumentEmp", back_populates='time')
+    day = relationship("Daystart", back_populates='time')
+    
+    
