@@ -1,8 +1,11 @@
 
+import datetime
+from email.policy import default
 from enum import unique
 from time import time
 from turtle import back
 from typing import Optional
+from xmlrpc.client import DateTime
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date,DateTime
 from sqlalchemy.orm import relationship
 
@@ -62,9 +65,9 @@ class MonumentEmp(Base):
     category = relationship("Category", back_populates="madeBy")
     scanner = relationship("Scanner", back_populates='madeBy')
     rate = relationship("RateCard", back_populates='madeBy')
-    web = relationship("WebResources", back_populates='modeBy')
-    day = relationship("Day", back_populates='modeBy')
-    time = relationship("Time", back_populates='modeBy')
+    web = relationship("WebResources", back_populates='madeBy')
+    day = relationship("Day", back_populates='madeBy')
+    time = relationship("Time", back_populates='madeBy')
 
 
 class Category(Base):
@@ -127,6 +130,42 @@ class Time(Base):
     emp_id = Column(Integer, ForeignKey('monumentemp.id'))
     day_id = Column(Integer,ForeignKey('day.id'))
     madeBy = relationship("MonumentEmp", back_populates='time')
-    day = relationship("Daystart", back_populates='time')
+    time = relationship("Day", back_populates='day')
     
     
+class Visitor(Base):
+    __tablename__ = "visitor"
+    vs_id = Column(Integer, primary_key=True, index=True)
+    vs_fname = Column(String)
+    vs_mname=Column(String)
+    vs_lname=Column(String)
+    vs_dob=Column(Date)
+    vs_mbno=Column(Integer)
+    vs_doctype=Column(String)
+    vs_docno=Column(Integer)
+    vs_email=Column(String)
+    vs_pass=Column(String)
+    vs_timestamp=Column(DateTime, default=datetime.datetime.utcnow)
+    
+class booking(Base):
+    __tablename__="booking"
+    bk_id=Column(Integer,primary_key=True, index=True)
+    vs_id=Column(Integer)
+    ts_id=Column(Integer)
+    rt_id=Column(Integer)
+    bk_nop=Column(Integer)
+    bk_timestamp=Column(DateTime, default=datetime.datetime.utcnow)
+    sc_id=Column(Integer)
+    sc_timestamp=Column(DateTime)
+    bk_status=Column(Integer)
+
+    
+class payment(Base):
+    __tablename__="payment"
+    pay_id=Column(Integer,primary_key=True, index=True)
+    vs_id=Column(Integer)
+    bk_id=Column(Integer)
+    pay_amount=Column(Integer)
+    pay_oid=Column(String)
+    pay_payid=Column(String)
+    pay_timestamp=Column(DateTime,default=datetime.datetime.utcnow)

@@ -204,3 +204,35 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+class Visitor(BaseModel):
+    vs_fname:str
+    vs_mname:str
+    vs_lname:str
+    vs_dob:date
+    vs_mbno:int
+    vs_doctype:str
+    vs_docno:int
+    vs_email:str
+    vs_pass:str
+    
+    
+class booking(BaseModel):
+    ts_id:int
+    rt_id:int
+    bk_nop:int
+    bk_status:int
+    
+
+    
+class payment(BaseModel):
+    vs_id:int
+    bk_id:int
+    pay_amount:int
+    pay_oid:int
+    pay_payid:int
+
+class scanner_verify(BaseModel):
+    cipher_txt:str
+    scanner_id:int
+
